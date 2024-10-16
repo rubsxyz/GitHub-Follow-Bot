@@ -1,83 +1,83 @@
-import requests # type: ignore
 import os
-import time
-from dotenv import load_dotenv
+from unfollow_script import unfollow_script
+from follow_script import follow_specific_user, follow_random_user
 
-# Load environment variables from .env file
-load_dotenv()
-
-TOKEN = os.getenv('GITHUB_TOKEN')
-YOUR_USERNAME = os.getenv('GITHUB_USERNAME')
-
-# Check if TOKEN and YOUR_USERNAME are set
-if not TOKEN or not YOUR_USERNAME:
-    print('Error: GITHUB_TOKEN and GITHUB_USERNAME must be set in the .env file.')
-    exit(1)
-
-headers = {
-    'Authorization': f'token {TOKEN}',
-    'Accept': 'application/vnd.github.v3+json'
-}
-
-def get_all_following():
+def clear_screen():
     """
-    Retrieves all users that you are currently following.
-    Handles pagination to ensure all users are fetched.
+    Clears the terminal screen for a cleaner interface.
+    Works for both Windows (cls) and Unix-based systems (clear).
     """
-    following_users = []
-    page = 1
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_main_menu():
+    """
+    Prints the main menu with better formatting and appeal.
+    """
+    print("\n" + "=" * 50)
+    print(" " * 15 + "GITHUB BOT MENU")
+    print("=" * 50)
+    print("Welcome to your GitHub automation tool!")
+    print("Please select one of the options below:")
+    print("=" * 50)
+    print("1. 🧹 Run Unfollow Script (Unfollow users who don't follow you back)")
+    print("2. 👥 Run Follow Script")
+    print("3. ❌ Exit")
+    print("=" * 50)
+
+def print_follow_menu():
+    """
+    Prints the follow sub-menu with better formatting and appeal.
+    """
+    print("\n" + "=" * 50)
+    print(" " * 18 + "FOLLOW MENU")
+    print("=" * 50)
+    print("1. 👤 Follow users from a specific GitHub account")
+    print("2. 🌍 Randomly follow trending GitHub users")
+    print("3. 🔙 Return to the main menu")
+    print("=" * 50)
+
+def main_menu():
+    """
+    Main menu to select between unfollowing or following scripts with a cleaner layout.
+    """
     while True:
-        following_url = f'https://api.github.com/user/following?page={page}'
-        response = requests.get(following_url, headers=headers)
-        if response.status_code != 200:
-            print(f'Error fetching following list: {response.status_code}')
+        clear_screen()  # Clear the screen before displaying the main menu
+        print_main_menu()
+        choice = input("Enter your choice (1/2/3): ").strip()
+
+        if choice == '1':
+            clear_screen()  # Clear screen before starting the unfollow script
+            unfollow_script()
+        elif choice == '2':
+            follow_menu()
+        elif choice == '3':
+            clear_screen()  # Clear screen before exiting
+            print("Exiting the program. Goodbye! 👋")
             break
-        data = response.json()
-        if not data:
-            break
-        following_users.extend(data)
-        page += 1
-    return following_users
-
-def is_following_back(username):
-    """
-    Checks if the specified user is following you back.
-    """
-    check_follow_url = f'https://api.github.com/users/{username}/following/{YOUR_USERNAME}'
-    check_response = requests.get(check_follow_url, headers=headers)
-    return check_response.status_code == 204
-
-def unfollow_user(username):
-    """
-    Unfollows the specified user.
-    """
-    unfollow_url = f'https://api.github.com/user/following/{username}'
-    unfollow_response = requests.delete(unfollow_url, headers=headers)
-    return unfollow_response.status_code == 204
-
-def log_unfollowed_user(username):
-    with open('unfollowed_users.txt', 'a') as f:
-        f.write(f'{username}\n')
-
-def main():
-    print('Fetching the list of users you are following...')
-    following_users = get_all_following()
-    print(f'Total users you are following: {len(following_users)}\n')
-
-    for user in following_users:
-        username = user['login']
-        print(f'Checking if {username} follows you back...')
-        if is_following_back(username):
-            print(f'{username} follows you back. No action taken.\n')
         else:
-            print(f'{username} does not follow you back. Unfollowing...')
-            if unfollow_user(username):
-                print(f'Successfully unfollowed {username}\n')
-                log_unfollowed_user(username)
-            else:
-                print(f'Failed to unfollow {username}\n')
-        # Add delay to avoid hitting rate limits
-        time.sleep(1)
+            print("❌ Invalid choice. Please select a valid option (1/2/3).")
+            input("Press Enter to continue...")  # Wait for user input before refreshing the screen
+
+def follow_menu():
+    """
+    Sub-menu for the follow script with a cleaner layout.
+    """
+    while True:
+        clear_screen()  # Clear the screen before displaying the follow menu
+        print_follow_menu()
+        choice = input("Enter your choice (1/2/3): ").strip()
+
+        if choice == '1':
+            clear_screen()  # Clear screen before starting specific user follow
+            follow_specific_user()
+        elif choice == '2':
+            clear_screen()  # Clear screen before starting random follow
+            follow_random_user()
+        elif choice == '3':
+            break
+        else:
+            print("❌ Invalid choice. Please select a valid option (1/2/3).")
+            input("Press Enter to continue...")  # Wait for user input before refreshing the screen
 
 if __name__ == "__main__":
-    main()
+    main_menu()

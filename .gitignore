@@ -1,2 +1,4 @@
 .env
 unfollowed_users.txt
+
+/__pycache__
