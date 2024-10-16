@@ -79,8 +79,8 @@ pip install -r requirements.txt
 Create a `.env` file in the root directory of the project to store your GitHub API token and username. The file should look like this:
 
 ```bash
-GITHUB_TOKEN=your_github_token_here
-GITHUB_USERNAME=your_github_username_here
+GITHUB_TOKEN="your_github_token_here"
+GITHUB_USERNAME="your_github_username_here"
 ```
 
 Make sure to replace `your_github_token_here` and `your_github_username_here` with your actual GitHub Personal Access Token and username.
@@ -106,7 +106,7 @@ Please select one of the options below:
 
 1. 🧹 Run Unfollow Script (Unfollow users who don't follow you back)
 2. 👥 Run Follow Script
-3. # ❌ Exit
+3. ❌ Exit
    Enter your choice (1/2/3):
    Select an option, and follow the prompts to either unfollow, follow, or exit the program.
 ```
