@@ -53,10 +53,37 @@ def star_repository(owner, repo_name):
             print(f"Error parsing the response: {e}")
         return False
 
+def star_user_readme_repo(username):
+    """
+    Tries to star the user's README repository (which displays their GitHub bio).
+    The repository is typically named after their username (username/username).
+    """
+    repo_name = username  # GitHub README repo is usually username/username
+    print(f"Attempting to star {username}'s README repository: {repo_name}...")
+
+    # Check if the username/username repo exists
+    repos_url = f'https://api.github.com/repos/{username}/{repo_name}'
+    response = requests.get(repos_url, headers=headers)
+
+    if response.status_code == 200:
+        # Try to star the README repository
+        if star_repository(username, repo_name):
+            print(f"Successfully starred {username}/{repo_name}")
+        else:
+            print(f"Failed to star {username}/{repo_name}")
+    elif response.status_code == 404:
+        print(f"{username} does not have a README repository.")
+    else:
+        print(f"Failed to check repository {repo_name}. Status code: {response.status_code}")
+
 def star_user_random_repo(username):
     """
-    Attempts to find and star a random repository of the user.
+    Attempts to find and star the user's GitHub README repository or a random repository.
     """
+    # First try to star the README repository
+    star_user_readme_repo(username)
+
+    # If the README repo doesn't exist or fails, star a random repo
     repos_url = f'https://api.github.com/users/{username}/repos'
     response = requests.get(repos_url, headers=headers)
 
