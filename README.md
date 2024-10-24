@@ -41,13 +41,13 @@ Ensure you have the following software installed:
 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/rubsxyz/github-script.git
+git clone https://github.com/rubsxyz/GitHubScript.git
 ```
 
 2. **Navigate into the project folder:**
 
 ```bash
-cd github-script
+cd GitHubScript
 ```
 
 3. **Install Dependencies**
