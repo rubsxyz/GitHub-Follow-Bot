@@ -1,2 +1,4 @@
 requests==<latest_version>
 python-dotenv==<latest_version>
+logging==<latest_version>
+os==<latest_version>

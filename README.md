@@ -6,9 +6,9 @@ This project is a GitHub automation tool written in Python, designed to help use
 
 ## Features
 
-- 🧹 **Unfollow users** who do not follow you back.
-- 👥 **Follow users** from a specific GitHub account or follow random trending users.
-- ⭐ **Automatically star** repositories of followed users.
+-   🧹 **Unfollow users** who do not follow you back.
+-   👥 **Follow users** from a specific GitHub account or follow random trending users.
+-   ⭐ **Automatically star** repositories of followed users.
 
 ## Prerequisites
 
@@ -16,23 +16,42 @@ Ensure you have the following software installed:
 
 1. **Python 3.x**: Check Python installation:
 
-   ```bash
-   python --version
-   ```
+    ```bash
+    python --version
+    ```
 
 #### If Python is not installed, download and install it from the official Python website.
 
 2. **pip**: Python’s package manager to install dependencies:
 
-   ```bash
-   pip --version
-   ```
+    ```bash
+    pip --version
+    ```
 
-3. GitHub Personal Access Token (PAT):
+### 3. **Generate a GitHub Personal Access Token (PAT)**
 
-- Visit GitHub Developer Settings and generate a new token.
-- Grant "Contents" permissions for read/write access to public repositories.
-- Copy the token to use in the `.env` file.
+1. Go to [GitHub Developer Settings](https://github.com/settings/tokens) and click **Generate new token**.
+2. Under **Select Scopes**, choose the following permissions:
+    - **`public_repo`**: Allows the bot to access and interact with public repositories (e.g., starring repositories).
+    - **`read:user`**: Grants read access to your GitHub profile information.
+    - **`user:follow`**: Enables the bot to follow and unfollow other GitHub users on your behalf.
+3. Click **Generate token** and copy the token immediately.
+4. Save this token to the `.env` file (see the next step).
+
+---
+
+### 4. **Set Up Environment Variables**
+
+1. In the root directory of the project, locate the `.env-example` file.
+2. Open the file and replace the placeholder values with your GitHub Personal Access Token and username:
+
+    ```bash
+    GITHUB_TOKEN=your_github_token_here
+    GITHUB_USERNAME=your_github_username_here
+    ```
+
+3. After updating the values, **rename** the file from `.env-example` to `.env`:
+4. Ensure that `your_github_token_here` and `your_github_username_here` are correctly replaced with your actual GitHub token and username.
 
 ## Project Setup
 
@@ -97,8 +116,8 @@ Please select one of the options below:
 
 ## How It Works
 
-- Unfollow Script: Automatically unfollows users who are not following you back.
-- Follow Script: Allows you to either follow users from a specific account's followers or randomly follow trending GitHub users. It will also star the repositories of the users you follow.
+-   Unfollow Script: Automatically unfollows users who are not following you back.
+-   Follow Script: Allows you to either follow users from a specific account's followers or randomly follow trending GitHub users. It will also star the repositories of the users you follow.
 
 ## License
 
