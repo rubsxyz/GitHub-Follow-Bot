@@ -41,29 +41,13 @@ Ensure you have the following software installed:
 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/rubsxyz/github-automation-bot.git
+git clone https://github.com/rubsxyz/github-script.git
 ```
 
 2. **Navigate into the project folder:**
 
 ```bash
-cd github-automation-bot
-```
-
-3. **Create a Virtual Environment**
-
-#### For Windows:
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-#### For macOS/Linux:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
+cd github-script
 ```
 
 3. **Install Dependencies**
