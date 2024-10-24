@@ -1,6 +1,6 @@
 import os
-from unfollow_script import unfollow_script
-from follow_script import follow_specific_user, follow_random_user
+from scripts.unfollower_manager import unfollow_script
+from scripts.follower_manager import follow_specific_user, follow_random_user
 
 def clear_screen():
     """

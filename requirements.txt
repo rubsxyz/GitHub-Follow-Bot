@@ -1,2 +1,2 @@
-requests
-dotenv
+requests==<latest_version>
+python-dotenv==<latest_version>

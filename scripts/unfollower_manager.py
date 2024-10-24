@@ -1,6 +1,6 @@
 import time
 from github_utils import unfollow_user, YOUR_USERNAME, headers
-import requests
+import requests # type: ignore
 
 def get_all_following():
     """

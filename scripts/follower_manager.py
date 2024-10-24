@@ -1,6 +1,6 @@
 import time
 import random
-import requests
+import requests # type: ignore
 from github_utils import follow_user, star_user_random_repo, headers
 
 def get_followers_of_user(username):
