@@ -1,7 +1,10 @@
-import requests # type: ignore
+# github_utils.py
+
+import requests  # type: ignore
 import random
 import os
 from dotenv import load_dotenv
+import time  # Added for delays
 
 # Load environment variables from .env file
 load_dotenv()
@@ -100,3 +103,51 @@ def star_user_random_repo(username):
             print(f"{username} has no repositories to star.")
     else:
         print(f"Failed to fetch repositories for {username}")
+
+def unstar_all_repositories():
+    """
+    Unstars all repositories that the authenticated user has starred.
+    """
+    unstar_count = 0
+    page = 1
+    per_page = 100  # Maximum allowed per_page for GitHub API
+
+    while True:
+        starred_url = f'https://api.github.com/user/starred?page={page}&per_page={per_page}'
+        response = requests.get(starred_url, headers=headers)
+
+        if response.status_code != 200:
+            print(f"Failed to fetch starred repositories. Status code: {response.status_code}")
+            try:
+                print(f"Error message: {response.json()}")
+            except Exception as e:
+                print(f"Error parsing the response: {e}")
+            break
+
+        starred_repos = response.json()
+
+        if not starred_repos:
+            break
+
+        for repo in starred_repos:
+            owner = repo['owner']['login']
+            repo_name = repo['name']
+            unstar_url = f'https://api.github.com/user/starred/{owner}/{repo_name}'
+            unstar_response = requests.delete(unstar_url, headers=headers)
+
+            if unstar_response.status_code == 204:
+                unstar_count += 1
+                print(f"Unstarred {owner}/{repo_name}")
+            else:
+                print(f"Failed to unstar {owner}/{repo_name}. Status code: {unstar_response.status_code}")
+                try:
+                    print(f"Error message: {unstar_response.json()}")
+                except Exception as e:
+                    print(f"Error parsing the response: {e}")
+
+            time.sleep(0.5)  # Add a small delay to avoid hitting rate limits
+
+        page += 1
+
+    print(f"Total repositories unstarred: {unstar_count}")
+    return unstar_count

@@ -1,5 +1,6 @@
+# follower_manager.py
+
 import time
-import random
 import requests  # type: ignore
 from scripts.github_utils import follow_user, star_user_random_repo, headers
 import logging
@@ -12,6 +13,7 @@ if not os.path.exists(log_directory):
 
 logging.basicConfig(
     filename=os.path.join(log_directory, 'follower_manager.log'),
+    filemode='w',  # Overwrite the log file each run
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
@@ -53,46 +55,113 @@ def get_followers_of_user(username):
             break
     return followers
 
-def follow_specific_user():
+def follow_specific_user(should_star=True):
     """
     Follow users from a specific GitHub account by their username.
+    Optionally star their repositories.
     """
     target_username = input("Enter the username whose followers you want to follow: ").strip()
+    logging.info(f"User initiated following followers of: {target_username}")
     followers = get_followers_of_user(target_username)
     
     if not followers:
         logging.info(f"No followers found for {target_username}")
         return
-
+    
+    followed_count = 0
+    starred_count = 0
+    
     for user in followers:
         username = user['login']
         logging.info(f"Attempting to follow {username}...")
         if follow_user(username):
+            followed_count += 1
             logging.info(f"Successfully followed {username}")
-            star_user_random_repo(username)
+            if should_star:
+                if star_user_random_repo(username):
+                    starred_count += 1
+                    logging.info(f"Successfully starred a repository for {username}")
+                else:
+                    logging.error(f"Failed to star a repository for {username}")
         else:
             logging.error(f"Failed to follow {username}")
         time.sleep(1)  # Delay to avoid rate limits
+    
+    logging.info(f"Total users followed: {followed_count}")
+    if should_star:
+        logging.info(f"Total repositories starred: {starred_count}")
+    print(f"Total users followed: {followed_count}")
+    if should_star:
+        print(f"Total repositories starred: {starred_count}")
 
-def follow_random_user():
+def search_most_followed_in_following():
     """
-    Follows a random user from a random trending repository with logging.
+    Searches for users in your following list with the most followers.
+    Displays the top 10 users sorted by their follower count with a progress bar.
     """
-    trending_url = 'https://api.github.com/search/repositories?q=stars:>500&sort=stars'
     try:
-        response = requests.get(trending_url, headers=headers)
-        response.raise_for_status()
-        repos = response.json().get('items', [])
-        if repos:
-            random_repo = random.choice(repos)
-            owner = random_repo['owner']['login']
-            logging.info(f"Following the owner of the trending repository: {owner}")
-            if follow_user(owner):
-                logging.info(f"Successfully followed {owner}")
-                star_user_random_repo(owner)
-            else:
-                logging.error(f"Failed to follow {owner}")
-        else:
-            logging.info("No trending repositories found.")
+        # Fetch the list of users you are following
+        following = []
+        page = 1
+        per_page = 100  # Max per page for GitHub API
+        while True:
+            following_url = f'https://api.github.com/users/{os.getenv("GITHUB_USERNAME")}/following?page={page}&per_page={per_page}'
+            response = requests.get(following_url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+            if not data:
+                break
+            following.extend(data)
+            logging.info(f"Fetched {len(data)} users from following list on page {page}")
+            page += 1
+        if not following:
+            print("You are not following anyone.")
+            logging.info("No users found in your following list.")
+            return
+        
+        total_users = len(following)
+        user_followers = []
+        fetched_followers = 0
+        
+        print(f"Fetching follower counts for {total_users} users you are following...")
+        
+        # Initialize tqdm progress bar
+        try:
+            from tqdm import tqdm
+        except ImportError:
+            print("tqdm module not found. Installing it now...")
+            import subprocess
+            subprocess.check_call(["pip", "install", "tqdm"])
+            from tqdm import tqdm
+        
+        with tqdm(total=total_users, desc="Processing Users", unit="user") as pbar:
+            for user in following:
+                username = user['login']
+                user_url = f'https://api.github.com/users/{username}'
+                try:
+                    user_response = requests.get(user_url, headers=headers)
+                    user_response.raise_for_status()
+                    user_data = user_response.json()
+                    follower_count = user_data.get('followers', 0)
+                    user_followers.append((username, follower_count))
+                    fetched_followers += follower_count
+                    logging.info(f"Fetched {username} with {follower_count} followers.")
+                except requests.exceptions.RequestException as e:
+                    logging.error(f"Failed to fetch data for {username}. Error: {str(e)}")
+                pbar.update(1)  # Update the progress bar
+                time.sleep(0.5)  # Delay to avoid rate limits
+        
+        # Sort users by follower count in descending order
+        user_followers.sort(key=lambda x: x[1], reverse=True)
+        # Display top 10 users
+        top_n = 10
+        print(f"\nTop {top_n} users you are following by follower count:")
+        print("=" * 50)
+        for i, (username, followers) in enumerate(user_followers[:top_n], start=1):
+            print(f"{i}. {username} - {followers} followers")
+        logging.info(f"Displayed top {top_n} users you are following by follower count.")
+        print(f"\nTotal followers fetched: {fetched_followers}")
+        logging.info(f"Total followers fetched: {fetched_followers}")
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching trending repositories: {str(e)}")
+        logging.error(f"Error fetching following list or user data: {str(e)}")
+        print(f"An error occurred: {str(e)}")

@@ -1,6 +1,8 @@
+# unfollower_manager.py
+
 import time
 import requests  # type: ignore
-from scripts.github_utils import unfollow_user, YOUR_USERNAME, headers
+from scripts.github_utils import unfollow_user, headers, YOUR_USERNAME
 import logging
 import os
 
@@ -11,6 +13,7 @@ if not os.path.exists(log_directory):
 
 logging.basicConfig(
     filename=os.path.join(log_directory, 'unfollower_manager.log'),
+    filemode='w',  # Overwrite the log file each run
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
@@ -67,25 +70,39 @@ def unfollow_script():
     """
     Script for unfollowing users who don't follow back, with logging.
     """
+    logging.info('Starting Unfollow Script...')
+    print("Running Unfollow Script...")
+    
     logging.info('Fetching the list of users you are following...')
     following_users = get_all_following()
     logging.info(f'Fetched {len(following_users)} users from the following list.')
-
+    
     logging.info('Fetching the list of your followers...')
     followers = get_all_followers()
     logging.info(f'Fetched {len(followers)} followers.')
-
+    
     followers_set = {follower['login'] for follower in followers}
-
+    
+    unfollowed_count = 0
+    
     for user in following_users:
         username = user['login']
         if username not in followers_set:
             logging.info(f'{username} does not follow you back. Attempting to unfollow...')
+            print(f"Unfollowing {username}...")
             if unfollow_user(username):
+                unfollowed_count += 1
                 logging.info(f'Successfully unfollowed {username}')
+                print(f"Successfully unfollowed {username}")
             else:
                 logging.error(f'Failed to unfollow {username}')
+                print(f"Failed to unfollow {username}")
         else:
             logging.info(f'{username} follows you back. No action taken.')
+            print(f"{username} follows you back. No action taken.")
         # Add delay to avoid hitting rate limits
         time.sleep(1)
+    
+    logging.info(f"Total users unfollowed: {unfollowed_count}")
+    print(f"Total users unfollowed: {unfollowed_count}")
+    logging.info('Unfollow Script completed.')
