@@ -1,8 +1,17 @@
 # GitHub Automation Bot
 
-![Maintained](https://img.shields.io/badge/Maintained-yes-green.svg)
+![Release](https://img.shields.io/github/v/release/rubsxyz/GitHubScript?style=plastic)
+![Maintained](https://img.shields.io/badge/Maintained-yes-green.svg?style=plastic)
+![GitHub issues](https://img.shields.io/github/issues/rubsxyz/GitHubScript?style=plastic)
+![License](https://img.shields.io/github/license/rubsxyz/GitHubScript?style=plastic)
 
-This project is a GitHub automation tool written in Python, designed to help users automate common GitHub actions such as following, unfollowing, starring repositories, and managing starred repositories. This bot is **actively maintained**.
+## Getting Started
+
+#### 📦 Download the Latest Release
+
+- You can download the latest release of the GitHub Automation Bot from the **[Releases](https://github.com/rubsxyz/GitHubScript/releases)** page.
+
+#### This project is a GitHub automation tool written in Python, designed to help users automate common GitHub actions such as following, unfollowing, starring repositories, and managing starred repositories. This bot is **actively maintained**.
 
 ## Features
 
