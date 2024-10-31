@@ -5,6 +5,9 @@
 ![GitHub issues](https://img.shields.io/github/issues/rubsxyz/GitHubScript?style=plastic)
 ![License](https://img.shields.io/github/license/rubsxyz/GitHubScript?style=plastic)
 
+## ⚠️ Warning
+### Please note that mass following users is against GitHub's TOS (not stated below). Therefore, please use at your own risk!
+
 ## Getting Started
 
 #### 📦 Download the Latest Release
